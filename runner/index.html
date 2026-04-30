@@ -1,0 +1,30 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <script>
+        Promise.resolve().then(() => import('./wasm_exec_tinygo.js')).then(() => {
+            const goTiny = new Go();
+            WebAssembly.instantiateStreaming(fetch("./main.tinygo.wasm"), goTiny.importObject,).then((result) => {
+                goTiny.run(result.instance);
+                console.log(echo(`Hello from tinygo!`, undefined, null, 42));
+
+            }).catch((err) => {
+                console.warn("TinyGo WASM failed to load:", err);
+            });
+        });
+        Promise.resolve().then(() => import('./wasm_exec.js')).then(() => {
+            const go = new Go();
+            WebAssembly.instantiateStreaming(fetch("./main.wasm"), go.importObject,).then((result) => {
+                go.run(result.instance);
+                console.log(echo(`Hello from go!`, undefined, null, 42));
+            })
+        }).catch((err) => {
+            console.warn("Go WASM failed to load:", err);
+        });
+    </script>
+</head>
+
+<body></body>
+
+</html>
